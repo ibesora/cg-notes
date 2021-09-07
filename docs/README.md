@@ -49,6 +49,7 @@ All these extensions are considered to be part of the __Aproaching Zero Driver O
 
 # References
 * Real-Time Rendering (4th. ed.) - Tomas Akenine-Moller, Eric Haines, and Naty Hoffman. 2018. A. K. Peters, Ltd., USA.
+* 3D Graphics Rendering Cookbook - Sergey Kosarevsky, Viktor Latypov. 2021. Packt Publishing
 ## Links
 ### Repositories
 * 
