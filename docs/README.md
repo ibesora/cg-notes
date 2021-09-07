@@ -27,6 +27,22 @@ $$$ x^\mp=\begin{cases} 1 &\text{if } x \ge 1 \\ x &\text{if } 0 \lt x \lt 1 \\ 
 * A _scene_ is a collection of models comprising all the things that is included in the environment to be rendered. It can also contain material descriptions, lighting, and viewing specifications
 * _Shading_ and _shader_ terms are used to refer computer-generated visual appearance ("shading model", "shading equation", ...) or a programmable component of a rendering system ("vertex shader", "fragment shader", ...)
 
+## Modern OpenGL
+* **ARB_texture_storage**: Introduced in OpenGL 4.2, introduces immutable textures whose metadata (e.g. how many MIP levels are required)
+* **ARB_multi_draw_indirect**: Introduced in OpenGL 4.3, it's batching on steroids. It can render multiple different geometries in a single draw call
+* **ARB_buffer_storage**: Introduced in OpenGL 4.4, it gives better usage hints than _glBufferData()_ and allows applications to pass additional information about the requested allocation. It also introduces persistent mapped buffers, which allow applications to retain mapped buffer pointers across multiple threads
+* **ARB_enhanced_layout**: Also introduced in OpenGL 4.4, allows the use of compile-time constant expressions in layout qualifiers and specifying explicit byte offsets within a uniform or shader storage block
+* **ARB_direct_state_access (DSA)**: Introduced in OpenGL 4.5, provides a set of API functions to manipulate OpenGL objects, such as textures and buffers, directly rather than by means of the classic _bind-to-edit_ approach. This allows one to modify an object state without affecting the global OpenGL state
+* **GL_ARB_indirect_parameters**: Introduced in OpenGL 4.6, allows to store some parameters like draw count to MDI drawing commands inside buffers
+* **GL_ARB_shader_draw_parameters**: Also introduced in OpenGL 4.6, adds new built-in variables to GLSL vertex shader inputs, *gl_BaseVertexARB*, *gl_BaseInstanceARB* and *gl_DrawID*
+* **ARB_gl_spirv**: Allows a SPIR-V module to be used as a shader stage in OpenGL. This means we can use the GL shading language compiler to produce binary modules consumable by OpenGL and Vulkan
+* **ARB_bindless_texture**: Allows using 64-bit handles instead of texture objexts
+
+All these extensions are considered to be part of the __Aproaching Zero Driver Overhead (AZDO)__ set of techniques to make OpenGL faster by batching a lot of draw calls together
+
+
+
+
 # Projects
 
 # Resources
