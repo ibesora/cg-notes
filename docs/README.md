@@ -26,6 +26,8 @@ $$$ x^\mp=\begin{cases} 1 &\text{if } x \ge 1 \\ x &\text{if } 0 \lt x \lt 1 \\ 
 * A _model_ or _object_ is a collection of geometric entities
 * A _scene_ is a collection of models comprising all the things that is included in the environment to be rendered. It can also contain material descriptions, lighting, and viewing specifications
 * _Shading_ and _shader_ terms are used to refer computer-generated visual appearance ("shading model", "shading equation", ...) or a programmable component of a rendering system ("vertex shader", "fragment shader", ...)
+* A _Vertex Array Object_ is an OpenGL object that stores all of the state needed to supply vertex data
+* A _Polygon offset_ is a value that can be used to offset each fragment's depth value after it's interpolated from the depth value of the appropiate vertices
 
 ## Modern OpenGL
 * **ARB_texture_storage**: Introduced in OpenGL 4.2, introduces immutable textures whose metadata (e.g. how many MIP levels are required)
@@ -40,7 +42,8 @@ $$$ x^\mp=\begin{cases} 1 &\text{if } x \ge 1 \\ x &\text{if } 0 \lt x \lt 1 \\ 
 
 All these extensions are considered to be part of the __Aproaching Zero Driver Overhead (AZDO)__ set of techniques to make OpenGL faster by batching a lot of draw calls together
 
-
+## Random notes
+* When drawing multiple geometry (or the same geometry with different attributes multiple times), instead of updating the buffer data with _glNamedBufferSubData_ each time, we can use _glNamedBufferSubData_ once to update all of them at once, and then use _glBindBufferRange_ to bind a subrange of the main buffer to draw. You can see the first approach [here](https://github.com/ibesora/cg-notes-code/blob/2cf9039642bbf4c73805610a7f3639084458b4c1/Examples/03_Maths/src/main.cpp#L232) and the second one [here](https://github.com/ibesora/cg-notes-code/blob/2cf9039642bbf4c73805610a7f3639084458b4c1/Examples/04_SingleBuffer/src/main.cpp#L239). Notice that in order to be able to index a buffer range, the size of each of them needs to be a multiple of *GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT* so we might need to add padding to our buffer data structure. In the second example, the *GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT* value that my GPU reports is 16 bytes and the data structure is 68 bytes so we need to add 12 bytes of padding, which is done [here](https://github.com/ibesora/cg-notes-code/blob/2cf9039642bbf4c73805610a7f3639084458b4c1/Examples/04_SingleBuffer/src/main.cpp#L83)
 
 
 # Projects

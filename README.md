@@ -6,4 +6,4 @@ Uses [docsify](https://docsify.js.org/) and [katex](https://github.com/Khan/KaTe
 
 Just run `docsify serve docs` to build the docs 
 
-Code examples can be found [here](https://ibesora.github.io/cg-notes-code/)
+Code examples can be found [here](https://www.github.io/ibesora/cg-notes-code/)
