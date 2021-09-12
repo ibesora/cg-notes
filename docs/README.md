@@ -42,7 +42,95 @@ $$$ x^\mp=\begin{cases} 1 &\text{if } x \ge 1 \\ x &\text{if } 0 \lt x \lt 1 \\ 
 
 All these extensions are considered to be part of the __Aproaching Zero Driver Overhead (AZDO)__ set of techniques to make OpenGL faster by batching a lot of draw calls together
 
-## Random notes
+### Recipes
+
+#### Creating a vertex array object
+Create the object and upload the data,
+```cpp
+  GLuint vao;
+	glCreateVertexArrays(1, &vao);
+```
+bind it, 
+```cpp
+  glBindVertexArray(vao);
+```
+upload the data to the buffer (this is an optional step because data can be generated in shaders),
+```cpp
+```
+draw it,
+```cpp
+  glDrawArrays(GL_TRIANGLES, 0, 36);
+```
+and delete resources
+```cpp
+  glDeleteVertexArrays(1, &vaoID);
+```
+
+#### Using a texture
+Create the object and upload the data,
+```cpp
+  int w, h, comp;
+	const uint8_t* img = stbi_load(path, &w, &h, &comp, 3);
+	GLuint texture;
+	glCreateTextures(GL_TEXTURE_2D, 1, &texture);
+	glTextureParameteri(texture, GL_TEXTURE_MAX_LEVEL, 0);
+	glTextureParameteri(texture, GL_TEXTURE_MIN_FILTER, minFilter);
+	glTextureParameteri(texture, GL_TEXTURE_MAG_FILTER, maxFilter);
+	glTextureStorage2D(texture, 1, GL_RGB8, w, h);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+```
+bind it, 
+```cpp
+  glBindTextures(0, 1, &texture);
+```
+upload the data to the buffer,
+```cpp
+  glTextureSubImage2D(texture, 0, 0, 0, w, h, GL_RGB, GL_UNSIGNED_BYTE, img);
+	stbi_image_free((void*)img);
+```
+and draw it
+```glsl
+  layout (location=0) in vec2 uv;
+  layout (location=0) out vec4 out_FragColor;
+  // Notice that we don't need to send which texture we are using because they are bound in order 
+  uniform sampler2D texture0;
+  void main() {
+    out_FragColor = texture(texture0, uv);
+  }
+```
+
+#### Using an uniform buffer object
+Create the object and upload the data,
+```cpp
+  // Define a uniform buffer struct
+  struct PerFrameData
+  {
+    mat4 mvp;
+    int isWireframe;
+  };
+```
+bind it, 
+```cpp
+  const GLsizeiptr kBufferSize = sizeof(PerFrameData);
+	GLuint perFrameDataBuffer;
+	glCreateBuffers(1, &perFrameDataBuffer);
+	glNamedBufferStorage(perFrameDataBuffer, kBufferSize, nullptr, GL_DYNAMIC_STORAGE_BIT);
+```
+upload the data to the buffer,
+```cpp
+  PerFrameData perFrameData = { .mvp = p * m, .isWireframe = false };
+	glNamedBufferSubData(perFrameDataBuffer, 0, kBufferSize, perFrameData);
+```
+draw it,
+```cpp
+  glBindBufferRange(GL_UNIFORM_BUFFER, 0, perFrameDataBuffer, 0, kBufferSize);
+```
+and delete the resources
+```cpp
+  glDeleteBuffers(1, &perFrameDataBuffer);
+```
+
+### Random notes
 * When drawing multiple geometry (or the same geometry with different attributes multiple times), instead of updating the buffer data with _glNamedBufferSubData_ each time, we can use _glNamedBufferSubData_ once to update all of them at once, and then use _glBindBufferRange_ to bind a subrange of the main buffer to draw. You can see the first approach [here](https://github.com/ibesora/cg-notes-code/blob/2cf9039642bbf4c73805610a7f3639084458b4c1/Examples/03_Maths/src/main.cpp#L232) and the second one [here](https://github.com/ibesora/cg-notes-code/blob/2cf9039642bbf4c73805610a7f3639084458b4c1/Examples/04_SingleBuffer/src/main.cpp#L239). Notice that in order to be able to index a buffer range, the size of each of them needs to be a multiple of *GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT* so we might need to add padding to our buffer data structure. In the second example, the *GL_UNIFORM_BUFFER_OFFSET_ALIGNMENT* value that my GPU reports is 16 bytes and the data structure is 68 bytes so we need to add 12 bytes of padding, which is done [here](https://github.com/ibesora/cg-notes-code/blob/2cf9039642bbf4c73805610a7f3639084458b4c1/Examples/04_SingleBuffer/src/main.cpp#L83)
 
 
